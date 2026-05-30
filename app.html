@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Calc | Aris Labs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            font-family: 'Inter', sans-serif;
+        }
+        .calc-btn {
+            transition: all 0.2s ease;
+        }
+        .calc-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="bg-slate-800 p-6 rounded-3xl shadow-2xl border border-slate-700 w-80">
+        <div id="display" class="w-full h-20 bg-slate-900 text-white text-right text-4xl p-4 rounded-2xl mb-6 font-mono overflow-hidden flex items-center justify-end">
+            0
+        </div>
+        <div class="grid grid-cols-4 gap-3">
+            <!-- Row 1 -->
+            <button onclick="clearDisplay()" class="calc-btn col-span-2 bg-slate-600 hover:bg-slate-500 text-white p-4 rounded-2xl font-bold">AC</button>
+            <button onclick="appendOperator('/')" class="calc-btn bg-indigo-500 hover:bg-indigo-400 text-white p-4 rounded-2xl font-bold">/</button>
+            <button onclick="appendOperator('*')" class="calc-btn bg-indigo-500 hover:bg-indigo-400 text-white p-4 rounded-2xl font-bold">×</button>
+            
+            <!-- Row 2 -->
+            <button onclick="appendNumber('7')" class="calc-btn bg-slate-700 hover:bg-slate-600 text-white p-4 rounded-2xl font-bold">7</button>
+            <button onclick="appendNumber('8')" class="calc-btn bg-slate-700 hover:bg-slate-600 text-white p-4 rounded-2xl font-bold">8</button>
+            <button onclick="appendNumber('9')" class="calc-btn bg-slate-700 hover:bg-slate-600 text-white p-4 rounded-2xl font-bold">9</button>
+            <button onclick="appendOperator('-')" class="calc-btn bg-indigo-500 hover:bg-indigo-400 text-white p-4 rounded-2xl font-bold">-</button>
+            
+            <!-- Row 3 -->
+            <button onclick="appendNumber('4')" class="calc-btn bg-slate-700 hover:bg-slate-600 text-white p-4 rounded-2xl font-bold">4</button>
+            <button onclick="appendNumber('5')" class="calc-btn bg-slate-700 hover:bg-slate-600 text-white p-4 rounded-2xl font-bold">5</button>
+            <button onclick="appendNumber('6')" class="calc-btn bg-slate-700 hover:bg-slate-600 text-white p-4 rounded-2xl font-bold">6</button>
+            <button onclick="appendOperator('+')" class="calc-btn bg-indigo-500 hover:bg-indigo-400 text-white p-4 rounded-2xl font-bold">+</button>
+            
+            <!-- Row 4 -->
+            <button onclick="appendNumber('1')" class="calc-btn bg-slate-700 hover:bg-slate-600 text-white p-4 rounded-2xl font-bold">1</button>
+            <button onclick="appendNumber('2')" class="calc-btn bg-slate-700 hover:bg-slate-600 text.white p-4 rounded-2xl font-bold">2</button>
+            <button onclick="appendNumber('3')" class="calc-btn bg-slate-700 hover:bg-slate-600 text-white p-4 rounded-2xl font-bold">3</button>
+            <button onclick="calculate()" class="calc-btn row-span-2 bg-cyan-500 hover:bg-cyan-400 text-white p-4 rounded-2xl font-bold">=</button>
+            
+            <!-- Row 5 -->
+            <button onclick="appendNumber('0')" class="calc-btn col-span-2 bg-slate-700 hover:bg-slate-600 text-white p-4 rounded-2xl font-bold">0</button>
+            <button onclick="appendNumber('.')" class="calc-btn bg-slate-700 hover:bg-slate-600 text-white p-4 rounded-2xl font-bold">.</button>
+        </div>
+    </div>
+
+    <script>
+        let currentInput = '0';
+        let shouldResetScreen = false;
+        const displayElement = document.getElementById('display');
+
+        function updateDisplay() {
+            displayElement.innerText = currentInput;
+        }
+
+        function appendNumber(num) {
+            if (currentInput === '0' || shouldResetScreen) {
+                currentInput = num;
+                shouldResetScreen = false;
+            } else {
+                currentInput += num;
+            }
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            if (shouldResetScreen) {
+                // If we just calculated, allow continuing the calculation with the result
+                shouldResetScreen = false;
+            }
+            const lastChar = currentInput.slice(-1);
+            if (['+', '-', '*', '/'].includes(lastChar)) {
+                currentInput = currentInput.slice(0, -1) + op;
+            } else {
+                currentInput += op;
+            }
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentInput = '0';
+            shouldResetScreen = false;
+            updateDisplay();
+        }
+
+        function calculate() {
+            try {
+                currentInput = String(new Function('return ' + currentInput)());
+                shouldResetScreen = true;
+                updateDisplay();
+            } catch (e) {
+                currentInput = 'Erreur';
+                updateDisplay();
+                setTimeout(clearDisplay, 1.5 * 1000);
+            }
+        }
+    </script>
+</body>
+</html>
