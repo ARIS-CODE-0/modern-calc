@@ -55,6 +55,7 @@
 
     <script>
         let currentInput = '0';
+        let shouldResetScreen = false;
         const displayElement = document.getElementById('display');
 
         function updateDisplay() {
@@ -62,12 +63,20 @@
         }
 
         function appendNumber(num) {
-            if (currentInput === '0') currentInput = num;
-            else currentInput += num;
+            if (currentInput === '0' || shouldResetScreen) {
+                currentInput = num;
+                shouldResetScreen = false;
+            } else {
+                currentInput += num;
+            }
             updateDisplay();
         }
 
         function appendOperator(op) {
+            if (shouldResetScreen) {
+                // If we just calculated, allow continuing the calculation with the result
+                shouldResetScreen = false;
+            }
             const lastChar = currentInput.slice(-1);
             if (['+', '-', '*', '/'].includes(lastChar)) {
                 currentInput = currentInput.slice(0, -1) + op;
@@ -79,13 +88,14 @@
 
         function clearDisplay() {
             currentInput = '0';
+            shouldResetScreen = false;
             updateDisplay();
         }
 
         function calculate() {
             try {
-                // Use Function instead of eval for a slightly safer approach
                 currentInput = String(new Function('return ' + currentInput)());
+                shouldResetScreen = true;
                 updateDisplay();
             } catch (e) {
                 currentInput = 'Erreur';
